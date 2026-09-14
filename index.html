@@ -254,6 +254,14 @@
             color: #fff;
         }
 
+        .summary-sub {
+            font-size: 0.72rem;
+            color: #c7d2fe;
+            font-weight: 700;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+
         .progress-container {
             height: 7px;
             background: rgba(255, 255, 255, 0.15);
@@ -325,19 +333,34 @@
         .checkbox-row {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            padding: 2px 0;
+            gap: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+            padding: 6px 2px;
             cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
-        .checkbox-row input {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--accent);
-            border-radius: 4px;
-            cursor: pointer;
+        .custom-check-box {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 2px solid var(--border);
+            background: var(--input-bg);
+            display: grid;
+            place-items: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .checkbox-row.checked .custom-check-box {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 900;
         }
 
         .btn-submit {
@@ -470,7 +493,7 @@
         .item-right {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
             flex-shrink: 0;
         }
 
@@ -482,6 +505,17 @@
             color: var(--text-main);
         }
 
+        .btn-edit {
+            background: none;
+            border: none;
+            color: var(--accent);
+            opacity: 0.65;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 4px 2px;
+        }
+        .btn-edit:hover { opacity: 1; }
+
         .btn-delete {
             background: none;
             border: none;
@@ -489,7 +523,7 @@
             opacity: 0.5;
             cursor: pointer;
             font-size: 0.85rem;
-            padding: 4px;
+            padding: 4px 2px;
         }
 
         .btn-delete:hover { opacity: 1; }
@@ -676,6 +710,7 @@
                 <span class="summary-title" id="summaryMonthTitle">Total do Mês</span>
             </div>
             <div class="summary-amount" id="totalMes">R$ 0,00</div>
+            <div class="summary-sub" id="summarySub"></div>
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar" style="width: 0%"></div>
             </div>
@@ -686,12 +721,12 @@
             <form id="expenseForm" onsubmit="addExpense(event)">
                 <div class="form-grid">
                     <div>
-                        <input type="text" id="itemName" placeholder="Nome do item (ex: Aluguel, Netflix...)" required>
+                        <input type="text" id="itemName" placeholder="Nome do item (ex: Aluguel, Netflix...)" required maxlength="60">
                         <div class="field-error" id="errName">Digite um nome válido.</div>
                     </div>
                     <div class="input-row">
                         <div>
-                            <input type="number" step="0.01" min="0.01" id="itemVal" placeholder="Valor Cheio (R$)" required>
+                            <input type="text" inputmode="decimal" id="itemVal" placeholder="Valor Cheio (R$)" required>
                             <div class="field-error" id="errVal">Informe um valor maior que zero.</div>
                         </div>
                         <select id="itemCat" onchange="toggleCategoryFields()">
@@ -702,13 +737,14 @@
                         </select>
                     </div>
 
-                    <div id="boxDivide" class="checkbox-row">
-                        <input type="checkbox" id="checkDivide" checked>
-                        <label for="checkDivide">Dividir por 2</label>
+                    <div id="boxDivide" class="checkbox-row checked" onclick="toggleCustomCheck('checkDivide')">
+                        <div class="custom-check-box" id="boxDivideIcon">✓</div>
+                        <input type="checkbox" id="checkDivide" checked style="display:none;">
+                        <span>Dividir por 2</span>
                     </div>
 
                     <div id="boxParcelado" style="display: none;">
-                        <input type="text" id="itemParcelaInput" placeholder="Ex: 8/10 (Atual / Total)">
+                        <input type="text" id="itemParcelaInput" placeholder="Ex: 8/10 (Atual / Total)" inputmode="numeric">
                         <div class="field-error" id="errParcela">Use o formato atual/total, ex: 8/10.</div>
                     </div>
 
@@ -743,7 +779,7 @@
             <h2 id="editModalTitle">Editar Item</h2>
             <div class="form-grid">
                 <div>
-                    <input type="text" id="editName" placeholder="Nome do item">
+                    <input type="text" id="editName" placeholder="Nome do item" maxlength="60">
                     <div class="field-error" id="editErrName">Digite um nome válido.</div>
                 </div>
                 <select id="editCat" onchange="toggleEditCategoryFields()">
@@ -753,15 +789,16 @@
                     <option value="Pontuais">Pontuais</option>
                 </select>
                 <div>
-                    <input type="number" step="0.01" min="0.01" id="editVal" placeholder="Valor (R$)">
+                    <input type="text" inputmode="decimal" id="editVal" placeholder="Valor (R$)">
                     <div class="field-error" id="editErrVal">Informe um valor maior que zero.</div>
                 </div>
-                <div id="editBoxDivide" class="checkbox-row">
-                    <input type="checkbox" id="editCheckDivide">
-                    <label for="editCheckDivide">Dividir por 2</label>
+                <div id="editBoxDivide" class="checkbox-row" onclick="toggleCustomCheck('editCheckDivide')">
+                    <div class="custom-check-box" id="editBoxDivideIcon">✓</div>
+                    <input type="checkbox" id="editCheckDivide" style="display:none;">
+                    <span>Dividir por 2</span>
                 </div>
                 <div id="editBoxParcelado" style="display:none;">
-                    <input type="text" id="editParcelaInput" placeholder="Ex: 8/10 (Atual / Total)">
+                    <input type="text" id="editParcelaInput" placeholder="Ex: 8/10 (Atual / Total)" inputmode="numeric">
                     <div class="field-error" id="editErrParcela">Use o formato atual/total, ex: 8/10.</div>
                 </div>
                 <div class="modal-actions">
@@ -782,11 +819,39 @@
             { name: "Pontuais", icon: "⭐" }
         ];
 
+        const MONTH_NAMES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
         const STORAGE_KEY = 'smart_wallet_v14';
         const OLD_STORAGE_KEY = 'smart_wallet_v13';
 
         function genId() {
             return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+        }
+
+        // Parses a Brazilian-style number input ("1.234,56" or "1234.56" or "1234,56")
+        // into a JS float. Returns NaN if it can't make sense of it.
+        function parseAmount(raw) {
+            if (typeof raw === 'number') return raw;
+            if (!raw) return NaN;
+            let s = raw.trim();
+            if (s === '') return NaN;
+            const hasComma = s.includes(',');
+            const hasDot = s.includes('.');
+            if (hasComma && hasDot) {
+                // Assume dot is a thousands separator, comma is the decimal mark
+                s = s.replace(/\./g, '').replace(',', '.');
+            } else if (hasComma) {
+                s = s.replace(',', '.');
+            }
+            return parseFloat(s);
+        }
+
+        function monthSortValue(name) {
+            const parts = String(name).split(' ');
+            const idx = MONTH_NAMES.indexOf(parts[0]);
+            const year = parseInt(parts[1], 10);
+            if (idx === -1 || isNaN(year)) return -Infinity;
+            return year * 12 + idx;
         }
 
         function migrateHistoryEntry(val) {
@@ -853,6 +918,25 @@
             document.querySelectorAll(`[id^="${prefix}Err"]`).forEach(el => el.classList.remove('show'));
         }
 
+        function toggleCustomCheck(id) {
+            const cb = document.getElementById(id);
+            setCustomCheckState(id, !cb.checked);
+        }
+
+        function setCustomCheckState(id, isChecked) {
+            const cb = document.getElementById(id);
+            const row = cb.parentElement;
+            const icon = row.querySelector('.custom-check-box');
+            cb.checked = isChecked;
+            if (isChecked) {
+                row.classList.add('checked');
+                icon.innerText = '✓';
+            } else {
+                row.classList.remove('checked');
+                icon.innerText = '';
+            }
+        }
+
         function applyDarkMode() {
             document.body.classList.toggle('dark', !!appData.darkMode);
             document.getElementById('darkModeBtn').innerText = appData.darkMode ? '☀️' : '🌙';
@@ -871,6 +955,12 @@
             if (wrap && !wrap.contains(e.target)) {
                 document.getElementById('menuDropdown').classList.remove('open');
             }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape') return;
+            if (document.getElementById('editModal').style.display === 'grid') closeEditModal();
+            if (document.getElementById('celebration').style.display === 'grid') closeCelebration();
         });
 
         function exportBackup() {
@@ -939,13 +1029,22 @@
             if (cat === 'Fixas de casa' || cat === 'Pontuais') {
                 boxDivide.style.display = 'flex';
                 if (cat === 'Fixas de casa') {
-                    document.getElementById('checkDivide').checked = true;
+                    setCustomCheckState('checkDivide', true);
                 }
             } else {
                 boxDivide.style.display = 'none';
             }
 
             boxParcelado.style.display = (cat === 'Parcelados') ? 'block' : 'none';
+        }
+
+        function validateParcelaInput(value) {
+            const m = String(value).trim().match(/^(\d+)\s*\/\s*(\d+)$/);
+            if (!m) return null;
+            const atual = parseInt(m[1], 10);
+            const total = parseInt(m[2], 10);
+            if (!atual || !total || atual < 1 || total < 1 || atual > total) return null;
+            return { atual, total };
         }
 
         function addExpense(e) {
@@ -955,7 +1054,7 @@
             const nameEl = document.getElementById('itemName');
             const valEl = document.getElementById('itemVal');
             const name = nameEl.value.trim();
-            const valInput = parseFloat(valEl.value);
+            const valInput = parseAmount(valEl.value);
             const cat = document.getElementById('itemCat').value;
 
             let hasError = false;
@@ -968,13 +1067,10 @@
                 hasError = true;
             }
 
-            let parcelaAtual, parcelaTotal;
+            let parcela;
             if (cat === 'Parcelados') {
-                const pInput = document.getElementById('itemParcelaInput').value.trim();
-                const parts = pInput.split('/');
-                parcelaAtual = parseInt(parts[0]);
-                parcelaTotal = parseInt(parts[1]);
-                if (!parcelaAtual || !parcelaTotal || parcelaAtual < 1 || parcelaTotal < 1 || parcelaAtual > parcelaTotal) {
+                parcela = validateParcelaInput(document.getElementById('itemParcelaInput').value);
+                if (!parcela) {
                     document.getElementById('errParcela').classList.add('show');
                     hasError = true;
                 }
@@ -994,8 +1090,8 @@
                 }
             } else if (cat === 'Parcelados') {
                 item.val = valInput;
-                item.parcelaAtual = parcelaAtual;
-                item.parcelaTotal = parcelaTotal;
+                item.parcelaAtual = parcela.atual;
+                item.parcelaTotal = parcela.total;
             } else {
                 item.val = valInput;
             }
@@ -1005,9 +1101,11 @@
 
             saveData();
             document.getElementById('expenseForm').reset();
-            document.getElementById('checkDivide').checked = true;
+            setCustomCheckState('checkDivide', true);
             toggleCategoryFields();
             renderApp();
+            showToast(`"${item.name}" adicionado.`);
+            nameEl.focus();
         }
 
         function togglePaid(id) {
@@ -1039,6 +1137,13 @@
             document.getElementById('celebration').style.display = 'none';
         }
 
+        document.getElementById('celebration').addEventListener('click', (e) => {
+            if (e.target.id === 'celebration') closeCelebration();
+        });
+        document.getElementById('editModal').addEventListener('click', (e) => {
+            if (e.target.id === 'editModal') closeEditModal();
+        });
+
         function deleteItem(id) {
             const idx = appData.months[activeMonth].findIndex(i => i.id === id);
             if (idx === -1) return;
@@ -1051,7 +1156,8 @@
 
             showToast(`"${item.name}" excluído.`, () => {
                 if (!appData.months[monthAtDeletion]) appData.months[monthAtDeletion] = [];
-                appData.months[monthAtDeletion].splice(idx, 0, item);
+                const insertAt = Math.min(idx, appData.months[monthAtDeletion].length);
+                appData.months[monthAtDeletion].splice(insertAt, 0, item);
                 saveData();
                 if (activeMonth === monthAtDeletion) renderApp();
             });
@@ -1064,13 +1170,15 @@
                 alert("Você não pode excluir o único mês restante.");
                 return;
             }
-            if (confirm(`Deseja realmente excluir o mês de ${monthName}?`)) {
+            if (confirm(`Deseja realmente excluir o mês de ${monthName}? Essa ação não pode ser desfeita.`)) {
                 delete appData.months[monthName];
                 if (appData.history[monthName]) delete appData.history[monthName];
 
-                const remainingMonths = Object.keys(appData.months);
-                activeMonth = remainingMonths[remainingMonths.length - 1];
-                appData.currentMonth = activeMonth;
+                if (activeMonth === monthName) {
+                    const remainingMonths = Object.keys(appData.months).sort((a, b) => monthSortValue(a) - monthSortValue(b));
+                    activeMonth = remainingMonths[remainingMonths.length - 1];
+                    appData.currentMonth = activeMonth;
+                }
                 saveData();
                 renderApp();
             }
@@ -1094,11 +1202,15 @@
             document.getElementById('editName').value = item.name;
             document.getElementById('editCat').value = item.cat;
             document.getElementById('editVal').value = item.originalVal !== undefined ? item.originalVal : item.val;
-            document.getElementById('editCheckDivide').checked = item.originalVal !== undefined;
+            
+            const isDivided = item.originalVal !== undefined;
+            setCustomCheckState('editCheckDivide', isDivided);
+
             document.getElementById('editParcelaInput').value = item.cat === 'Parcelados' ? `${item.parcelaAtual}/${item.parcelaTotal}` : '';
 
             toggleEditCategoryFields();
             document.getElementById('editModal').style.display = 'grid';
+            setTimeout(() => document.getElementById('editName').focus(), 50);
         }
 
         function closeEditModal() {
@@ -1113,7 +1225,7 @@
 
             const name = document.getElementById('editName').value.trim();
             const cat = document.getElementById('editCat').value;
-            const valInput = parseFloat(document.getElementById('editVal').value);
+            const valInput = parseAmount(document.getElementById('editVal').value);
 
             let hasError = false;
             if (!name) {
@@ -1125,13 +1237,10 @@
                 hasError = true;
             }
 
-            let parcelaAtual, parcelaTotal;
+            let parcela;
             if (cat === 'Parcelados') {
-                const pInput = document.getElementById('editParcelaInput').value.trim();
-                const parts = pInput.split('/');
-                parcelaAtual = parseInt(parts[0]);
-                parcelaTotal = parseInt(parts[1]);
-                if (!parcelaAtual || !parcelaTotal || parcelaAtual < 1 || parcelaTotal < 1 || parcelaAtual > parcelaTotal) {
+                parcela = validateParcelaInput(document.getElementById('editParcelaInput').value);
+                if (!parcela) {
                     document.getElementById('editErrParcela').classList.add('show');
                     hasError = true;
                 }
@@ -1154,8 +1263,8 @@
                 }
             } else if (cat === 'Parcelados') {
                 item.val = valInput;
-                item.parcelaAtual = parcelaAtual;
-                item.parcelaTotal = parcelaTotal;
+                item.parcelaAtual = parcela.atual;
+                item.parcelaTotal = parcela.total;
             } else {
                 item.val = valInput;
             }
@@ -1163,25 +1272,20 @@
             saveData();
             closeEditModal();
             renderApp();
+            showToast(`"${item.name}" atualizado.`);
         }
 
         function advanceToNextMonth() {
-            const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
             const parts = activeMonth.split(' ');
-            let mIndex = monthNames.indexOf(parts[0]);
+            let mIndex = MONTH_NAMES.indexOf(parts[0]);
             let year = parseInt(parts[1]) || 2026;
             mIndex++;
             if (mIndex > 11) { mIndex = 0; year++; }
-            const nextMonthName = `${monthNames[mIndex]} ${year}`;
+            const nextMonthName = `${MONTH_NAMES[mIndex]} ${year}`;
 
             if (!appData.months[nextMonthName]) {
-                const currentItems = appData.months[activeMonth] || [];
-                const currentTotal = currentItems.reduce((acc, i) => acc + i.val, 0);
-                const currentPaid = currentItems.filter(i => i.paid).reduce((acc, i) => acc + i.val, 0);
-                appData.history[activeMonth] = { total: currentTotal, paid: currentPaid };
-
                 let newMonthItems = [];
-                currentItems.forEach(item => {
+                (appData.months[activeMonth] || []).forEach(item => {
                     if (item.cat === 'Fixas de casa' || item.cat === 'Assinaturas') {
                         newMonthItems.push({ ...item, id: genId(), paid: false });
                     } else if (item.cat === 'Parcelados') {
@@ -1203,6 +1307,7 @@
             appData.currentMonth = activeMonth;
             saveData();
             renderApp();
+            showToast(`Agora em ${nextMonthName}.`);
         }
 
         function exportPDF() {
@@ -1223,13 +1328,18 @@
             html2pdf().from(element).set(opt).save().then(() => {
                 formCard.style.display = 'block';
                 historyCard.style.display = 'block';
+            }).catch(() => {
+                formCard.style.display = 'block';
+                historyCard.style.display = 'block';
+                showToast('Não foi possível gerar o PDF. Tente novamente.');
             });
         }
 
         function renderTabs() {
             const container = document.getElementById('tabsContainer');
             container.innerHTML = '';
-            Object.keys(appData.months).forEach(m => {
+            const sortedMonths = Object.keys(appData.months).sort((a, b) => monthSortValue(a) - monthSortValue(b));
+            sortedMonths.forEach(m => {
                 const wrapper = document.createElement('div');
                 wrapper.className = `tab-wrapper ${m === activeMonth ? 'active' : ''}`;
 
@@ -1242,6 +1352,7 @@
                 delBtn.className = 'tab-delete';
                 delBtn.innerHTML = '✕';
                 delBtn.title = 'Excluir mês';
+                delBtn.setAttribute('aria-label', `Excluir mês ${m}`);
                 delBtn.onclick = (e) => deleteMonth(m, e);
 
                 wrapper.appendChild(btn);
@@ -1259,6 +1370,10 @@
 
             document.getElementById('totalMes').innerText = fmt(total);
             document.getElementById('progressBar').style.width = `${percent}%`;
+            const remaining = Math.max(total - totalPago, 0);
+            document.getElementById('summarySub').innerText = items.length
+                ? `${fmt(totalPago)} pago • ${fmt(remaining)} restante (${percent}%)`
+                : '';
         }
 
         function renderCategories() {
@@ -1301,18 +1416,19 @@
                         div.className = `item-card ${item.paid ? 'paid' : ''}`;
                         div.innerHTML = `
                             <div class="item-left">
-                                <div class="checkbox-custom" role="checkbox" aria-checked="${item.paid}" tabindex="0"
+                                <div class="checkbox-custom" role="checkbox" aria-checked="${item.paid}" tabindex="0" aria-label="Marcar ${item.name} como ${item.paid ? 'pendente' : 'pago'}"
                                      onclick="togglePaid('${item.id}')" onkeydown="checkboxKeydown(event, '${item.id}')">
                                     ${item.paid ? '✓' : ''}
                                 </div>
                                 <div class="item-info">
-                                    <span class="item-title" onclick="openEditModal('${item.id}')" title="Editar item">${item.name}</span>
+                                    <span class="item-title" role="button" tabindex="0" onclick="openEditModal('${item.id}')" onkeydown="if(event.key==='Enter')openEditModal('${item.id}')" title="Editar item">${item.name}</span>
                                     <div class="item-meta">${metaHtml}</div>
                                 </div>
                             </div>
                             <div class="item-right">
                                 <div class="item-price" onclick="openEditModal('${item.id}')" title="Editar item">${fmt(item.originalVal !== undefined ? item.originalVal : item.val)}</div>
-                                <button class="btn-delete" onclick="deleteItem('${item.id}')" title="Excluir">✕</button>
+                                <button class="btn-edit" onclick="openEditModal('${item.id}')" title="Editar" aria-label="Editar ${item.name}">✎</button>
+                                <button class="btn-delete" onclick="deleteItem('${item.id}')" title="Excluir" aria-label="Excluir ${item.name}">✕</button>
                             </div>
                         `;
                         listEl.appendChild(div);
@@ -1324,14 +1440,19 @@
         function renderHistory() {
             const container = document.getElementById('historyList');
             container.innerHTML = '';
-            const historyObj = appData.history || {};
-            if (Object.keys(historyObj).length === 0) {
+
+            const pastMonths = Object.keys(appData.months)
+                .filter(m => m !== activeMonth)
+                .sort((a, b) => monthSortValue(b) - monthSortValue(a));
+
+            if (pastMonths.length === 0) {
                 container.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted);">Nenhum histórico registrado.</div>`;
                 return;
             }
-            for (let [m, entry] of Object.entries(historyObj)) {
-                const total = entry.total || 0;
-                const paid = entry.paid || 0;
+            pastMonths.forEach(m => {
+                const items = appData.months[m] || [];
+                const total = items.reduce((acc, i) => acc + i.val, 0);
+                const paid = items.filter(i => i.paid).reduce((acc, i) => acc + i.val, 0);
                 const pct = total > 0 ? Math.round((paid / total) * 100) : 0;
                 let div = document.createElement('div');
                 div.className = 'history-row';
@@ -1343,7 +1464,7 @@
                     <div class="history-bar-bg"><div class="history-bar-fill" style="width:${pct}%"></div></div>
                 `;
                 container.appendChild(div);
-            }
+            });
         }
 
         function toggleHistory() {
