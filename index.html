@@ -325,23 +325,34 @@
         .checkbox-row {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             font-size: 0.85rem;
-            color: var(--text-muted);
-            padding: 8px 4px;
+            font-weight: 700;
+            color: var(--text-main);
+            padding: 10px 4px;
             cursor: pointer;
-            position: relative;
-            z-index: 10;
             user-select: none;
             -webkit-user-select: none;
         }
 
-        .checkbox-row input {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--accent);
-            border-radius: 4px;
-            cursor: pointer;
+        .custom-check-box {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 2px solid var(--border);
+            background: var(--input-bg);
+            display: grid;
+            place-items: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .checkbox-row.checked .custom-check-box {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 900;
         }
 
         .btn-submit {
@@ -498,7 +509,7 @@
 
         .btn-delete:hover { opacity: 1; }
 
-        .history-card, .chart-card {
+        .history-card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
@@ -544,32 +555,6 @@
             height: 100%;
             background: var(--green);
             border-radius: 99px;
-        }
-
-        .chart-row {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin-bottom: 10px;
-        }
-        .chart-row-top {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-        .chart-bar-bg {
-            height: 8px;
-            background: var(--border);
-            border-radius: 99px;
-            overflow: hidden;
-        }
-        .chart-bar-fill {
-            height: 100%;
-            background: var(--accent-gradient);
-            border-radius: 99px;
-            transition: width 0.5s ease;
         }
 
         #celebration, #editModal {
@@ -732,9 +717,10 @@
                         </select>
                     </div>
 
-                    <div id="boxDivide" class="checkbox-row" onclick="const cb = document.getElementById('checkDivide'); cb.checked = !cb.checked;">
-                        <input type="checkbox" id="checkDivide" checked onclick="event.stopPropagation()">
-                        <label for="checkDivide" style="pointer-events: none;">Dividir por 2</label>
+                    <div id="boxDivide" class="checkbox-row checked" onclick="toggleCustomCheck('checkDivide')">
+                        <div class="custom-check-box" id="boxDivideIcon">✓</div>
+                        <input type="checkbox" id="checkDivide" checked style="display:none;">
+                        <span>Dividir por 2</span>
                     </div>
 
                     <div id="boxParcelado" style="display: none;">
@@ -748,14 +734,6 @@
         </div>
 
         <div id="categoriesContainer"></div>
-
-        <div class="chart-card" id="chartCardSection">
-            <div class="history-toggle" onclick="toggleChart()">
-                <span>📊 Gastos por Categoria</span>
-                <span id="chartArrow">▼</span>
-            </div>
-            <div id="chartBody" style="display:none; margin-top: 12px;"></div>
-        </div>
 
         <div class="history-card" id="historyCardSection">
             <div class="history-toggle" onclick="toggleHistory()">
@@ -794,9 +772,10 @@
                     <input type="number" step="0.01" min="0.01" id="editVal" placeholder="Valor (R$)">
                     <div class="field-error" id="editErrVal">Informe um valor maior que zero.</div>
                 </div>
-                <div id="editBoxDivide" class="checkbox-row" onclick="const cb = document.getElementById('editCheckDivide'); cb.checked = !cb.checked;">
-                    <input type="checkbox" id="editCheckDivide" onclick="event.stopPropagation()">
-                    <label for="editCheckDivide" style="pointer-events: none;">Dividir por 2</label>
+                <div id="editBoxDivide" class="checkbox-row" onclick="toggleCustomCheck('editCheckDivide')">
+                    <div class="custom-check-box" id="editBoxDivideIcon">✓</div>
+                    <input type="checkbox" id="editCheckDivide" style="display:none;">
+                    <span>Dividir por 2</span>
                 </div>
                 <div id="editBoxParcelado" style="display:none;">
                     <input type="text" id="editParcelaInput" placeholder="Ex: 8/10 (Atual / Total)">
@@ -891,6 +870,34 @@
             document.querySelectorAll(`[id^="${prefix}Err"]`).forEach(el => el.classList.remove('show'));
         }
 
+        function toggleCustomCheck(id) {
+            const cb = document.getElementById(id);
+            const row = cb.parentElement;
+            const icon = row.querySelector('.custom-check-box');
+            cb.checked = !cb.checked;
+            if (cb.checked) {
+                row.classList.add('checked');
+                icon.innerText = '✓';
+            } else {
+                row.classList.remove('checked');
+                icon.innerText = '';
+            }
+        }
+
+        function setCustomCheckState(id, isChecked) {
+            const cb = document.getElementById(id);
+            const row = cb.parentElement;
+            const icon = row.querySelector('.custom-check-box');
+            cb.checked = isChecked;
+            if (isChecked) {
+                row.classList.add('checked');
+                icon.innerText = '✓';
+            } else {
+                row.classList.remove('checked');
+                icon.innerText = '';
+            }
+        }
+
         function applyDarkMode() {
             document.body.classList.toggle('dark', !!appData.darkMode);
             document.getElementById('darkModeBtn').innerText = appData.darkMode ? '☀️' : '🌙';
@@ -977,7 +984,7 @@
             if (cat === 'Fixas de casa' || cat === 'Pontuais') {
                 boxDivide.style.display = 'flex';
                 if (cat === 'Fixas de casa') {
-                    document.getElementById('checkDivide').checked = true;
+                    setCustomCheckState('checkDivide', true);
                 }
             } else {
                 boxDivide.style.display = 'none';
@@ -1043,6 +1050,7 @@
 
             saveData();
             document.getElementById('expenseForm').reset();
+            setCustomCheckState('checkDivide', true);
             toggleCategoryFields();
             renderApp();
         }
@@ -1131,7 +1139,10 @@
             document.getElementById('editName').value = item.name;
             document.getElementById('editCat').value = item.cat;
             document.getElementById('editVal').value = item.originalVal !== undefined ? item.originalVal : item.val;
-            document.getElementById('editCheckDivide').checked = item.originalVal !== undefined;
+            
+            const isDivided = item.originalVal !== undefined;
+            setCustomCheckState('editCheckDivide', isDivided);
+
             document.getElementById('editParcelaInput').value = item.cat === 'Parcelados' ? `${item.parcelaAtual}/${item.parcelaTotal}` : '';
 
             toggleEditCategoryFields();
@@ -1246,10 +1257,8 @@
             const element = document.getElementById('pdfContent');
             const formCard = document.getElementById('formCardSection');
             const historyCard = document.getElementById('historyCardSection');
-            const chartCard = document.getElementById('chartCardSection');
             formCard.style.display = 'none';
             historyCard.style.display = 'none';
-            chartCard.style.display = 'none';
 
             const opt = {
                 margin:       10,
@@ -1262,7 +1271,6 @@
             html2pdf().from(element).set(opt).save().then(() => {
                 formCard.style.display = 'block';
                 historyCard.style.display = 'block';
-                chartCard.style.display = 'block';
             });
         }
 
@@ -1344,7 +1352,7 @@
                                 <div class="checkbox-custom" role="checkbox" aria-checked="${item.paid}" tabindex="0"
                                      onclick="togglePaid('${item.id}')" onkeydown="checkboxKeydown(event, '${item.id}')">
                                     ${item.paid ? '✓' : ''}
-                                </div>
+                                }</div>
                                 <div class="item-info">
                                     <span class="item-title" onclick="openEditModal('${item.id}')" title="Editar item">${item.name}</span>
                                     <div class="item-meta">${metaHtml}</div>
@@ -1358,33 +1366,6 @@
                         listEl.appendChild(div);
                     });
                 }
-            });
-        }
-
-        function renderChart() {
-            const body = document.getElementById('chartBody');
-            const items = appData.months[activeMonth] || [];
-            const total = items.reduce((acc, i) => acc + i.val, 0);
-
-            if (total === 0) {
-                body.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted);">Sem gastos neste mês ainda.</div>`;
-                return;
-            }
-
-            body.innerHTML = '';
-            categories.forEach(catObj => {
-                const catTotal = items.filter(i => i.cat === catObj.name).reduce((acc, i) => acc + i.val, 0);
-                const pct = total > 0 ? Math.round((catTotal / total) * 100) : 0;
-                const row = document.createElement('div');
-                row.className = 'chart-row';
-                row.innerHTML = `
-                    <div class="chart-row-top">
-                        <span>${catObj.icon} ${catObj.name}</span>
-                        <span>${fmt(catTotal)} · ${pct}%</span>
-                    </div>
-                    <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${pct}%"></div></div>
-                `;
-                body.appendChild(row);
             });
         }
 
@@ -1421,20 +1402,11 @@
             arrow.innerText = open ? '▼' : '▲';
         }
 
-        function toggleChart() {
-            const body = document.getElementById('chartBody');
-            const arrow = document.getElementById('chartArrow');
-            const open = body.style.display === 'block';
-            body.style.display = open ? 'none' : 'block';
-            arrow.innerText = open ? '▼' : '▲';
-        }
-
         function renderApp() {
             if (!appData.months[activeMonth]) appData.months[activeMonth] = [];
             renderTabs();
             renderSummary();
             renderCategories();
-            renderChart();
             renderHistory();
             saveData();
         }
