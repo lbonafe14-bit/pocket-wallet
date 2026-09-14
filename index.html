@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Pocket">
     <title>Pocket • Smart Wallet</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -243,15 +246,6 @@
             font-weight: 800;
         }
 
-        .summary-toggle {
-            font-size: 0.65rem;
-            font-weight: 800;
-            color: #c7d2fe;
-            background: rgba(255,255,255,0.12);
-            padding: 5px 10px;
-            border-radius: 99px;
-        }
-
         .summary-amount {
             font-size: 2.4rem;
             font-weight: 800;
@@ -336,6 +330,8 @@
             color: var(--text-muted);
             padding: 2px 0;
             cursor: pointer;
+            position: relative;
+            z-index: 10;
         }
 
         .checkbox-row input {
@@ -343,6 +339,7 @@
             height: 18px;
             accent-color: var(--accent);
             border-radius: 4px;
+            cursor: pointer;
         }
 
         .btn-submit {
@@ -424,10 +421,6 @@
             place-items: center;
             cursor: pointer;
             flex-shrink: 0;
-        }
-        .checkbox-custom:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
         }
 
         .item-card.paid .checkbox-custom {
@@ -833,7 +826,6 @@
         }
 
         function migrateHistoryEntry(val) {
-            // legacy history stored a single number (total only)
             if (typeof val === 'number') return { total: val, paid: val };
             return val;
         }
@@ -841,7 +833,6 @@
         function loadAppData() {
             let raw = localStorage.getItem(STORAGE_KEY);
             if (!raw) {
-                // try migrating from previous version
                 const legacy = localStorage.getItem(OLD_STORAGE_KEY);
                 if (legacy) {
                     try {
@@ -850,7 +841,7 @@
                             parsed.history[m] = migrateHistoryEntry(parsed.history[m]);
                         });
                         return parsed;
-                    } catch (e) { /* fall through to default */ }
+                    } catch (e) { /* fall through */ }
                 }
                 return null;
             }
@@ -898,7 +889,6 @@
             document.querySelectorAll(`[id^="${prefix}Err"]`).forEach(el => el.classList.remove('show'));
         }
 
-        // ---------- Dark mode ----------
         function applyDarkMode() {
             document.body.classList.toggle('dark', !!appData.darkMode);
             document.getElementById('darkModeBtn').innerText = appData.darkMode ? '☀️' : '🌙';
@@ -909,7 +899,6 @@
             applyDarkMode();
         }
 
-        // ---------- Header menu ----------
         function toggleMenu() {
             document.getElementById('menuDropdown').classList.toggle('open');
         }
@@ -920,7 +909,6 @@
             }
         });
 
-        // ---------- Backup export / import ----------
         function exportBackup() {
             const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -965,7 +953,6 @@
             document.getElementById('menuDropdown').classList.remove('open');
         }
 
-        // ---------- Toast / undo ----------
         function showToast(message, undoFn) {
             const toast = document.getElementById('toast');
             clearTimeout(toastTimeout);
@@ -980,7 +967,6 @@
             toastTimeout = setTimeout(() => toast.classList.remove('show'), 5000);
         }
 
-        // ---------- Form: new expense ----------
         function toggleCategoryFields() {
             const cat = document.getElementById('itemCat').value;
             const boxDivide = document.getElementById('boxDivide');
@@ -1088,7 +1074,6 @@
             document.getElementById('celebration').style.display = 'none';
         }
 
-        // ---------- Delete with undo ----------
         function deleteItem(id) {
             const idx = appData.months[activeMonth].findIndex(i => i.id === id);
             if (idx === -1) return;
@@ -1126,7 +1111,6 @@
             }
         }
 
-        // ---------- Edit modal ----------
         function toggleEditCategoryFields() {
             const cat = document.getElementById('editCat').value;
             const boxDivide = document.getElementById('editBoxDivide');
@@ -1216,7 +1200,6 @@
             renderApp();
         }
 
-        // ---------- Month navigation ----------
         function advanceToNextMonth() {
             const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
             const parts = activeMonth.split(' ');
@@ -1281,7 +1264,6 @@
             });
         }
 
-        // ---------- Render ----------
         function renderTabs() {
             const container = document.getElementById('tabsContainer');
             container.innerHTML = '';
