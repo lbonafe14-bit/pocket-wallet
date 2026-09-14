@@ -15,20 +15,24 @@
             --surface: #ffffff;
             --surface-hover: #f8fafc;
             --border: #e2e8f0;
-            --border-focus: #4f46e5;
+            --border-focus: #7c3aed;
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --accent: #4f46e5;
-            --accent-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            --accent-glow: rgba(79, 70, 229, 0.25);
-            --card-summary-bg: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            --accent: #7c3aed;
+            --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
+            --accent-glow: rgba(124, 58, 237, 0.3);
+            --card-summary-bg: linear-gradient(135deg, #4c1d95 0%, #7c3aed 55%, #db2777 100%);
             --green: #10b981;
             --gold: #f59e0b;
             --red: #ef4444;
+            --cat-fixas: #f59e0b;
+            --cat-assinaturas: #06b6d4;
+            --cat-parcelados: #8b5cf6;
+            --cat-pontuais: #ec4899;
             --radius-lg: 26px;
             --radius-md: 18px;
             --radius-sm: 12px;
-            --shadow: 0 15px 35px -10px rgba(30, 27, 75, 0.1);
+            --shadow: 0 15px 35px -10px rgba(124, 58, 237, 0.15);
             --shadow-sm: 0 3px 12px rgba(15, 23, 42, 0.03);
             --input-bg: #f8fafc;
         }
@@ -40,7 +44,7 @@
             --border: #232c42;
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
-            --card-summary-bg: linear-gradient(135deg, #1e1b4b 0%, #2b2470 100%);
+            --card-summary-bg: linear-gradient(135deg, #3b0764 0%, #7c3aed 55%, #be185d 100%);
             --shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.4);
             --shadow-sm: 0 3px 12px rgba(0, 0, 0, 0.2);
             --input-bg: #182036;
@@ -58,10 +62,10 @@
             min-height: 100vh;
             background-color: var(--bg);
             background-image: 
-                radial-gradient(circle at 10% 0%, rgba(79, 70, 229, 0.07), transparent 45%),
-                radial-gradient(circle at 90% 100%, rgba(124, 58, 237, 0.05), transparent 45%);
+                radial-gradient(circle at 10% 0%, rgba(124, 58, 237, 0.1), transparent 45%),
+                radial-gradient(circle at 90% 100%, rgba(219, 39, 119, 0.08), transparent 45%);
             color: var(--text-main);
-            padding: 16px 12px 100px;
+            padding: 16px 12px 110px;
             max-width: 480px;
             margin: auto;
             transition: background-color 0.2s, color 0.2s;
@@ -182,12 +186,14 @@
             gap: 6px;
             box-shadow: var(--shadow-sm);
             white-space: nowrap;
+            transition: background 0.2s, box-shadow 0.2s;
         }
 
         .tab-wrapper.active {
             background: var(--accent-gradient);
             border-color: transparent;
             box-shadow: 0 6px 20px var(--accent-glow);
+            animation: checkPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .tab-btn {
@@ -229,6 +235,7 @@
             position: relative;
             overflow: hidden;
             box-shadow: var(--shadow);
+            animation: fadeInUp 0.5s ease both;
         }
 
         .summary-header {
@@ -254,14 +261,6 @@
             color: #fff;
         }
 
-        .summary-sub {
-            font-size: 0.72rem;
-            color: #c7d2fe;
-            font-weight: 700;
-            margin-top: -10px;
-            margin-bottom: 10px;
-        }
-
         .progress-container {
             height: 7px;
             background: rgba(255, 255, 255, 0.15);
@@ -271,25 +270,9 @@
 
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc);
+            background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6);
             border-radius: 99px;
             transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .card-form {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .card-form h2 {
-            font-size: 0.85rem;
-            font-weight: 800;
-            margin-bottom: 12px;
-            color: var(--text-main);
         }
 
         .form-grid {
@@ -382,6 +365,7 @@
             padding: 14px;
             margin-bottom: 14px;
             box-shadow: var(--shadow-sm);
+            animation: fadeInUp 0.4s ease both;
         }
 
         .category-header {
@@ -393,9 +377,26 @@
             border-bottom: 1px solid var(--border);
             font-size: 0.75rem;
             font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.4px;
             color: var(--text-muted);
+        }
+
+        .category-header-left {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            text-transform: uppercase;
+        }
+
+        .cat-icon-badge {
+            width: 26px;
+            height: 26px;
+            border-radius: 9px;
+            display: grid;
+            place-items: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
         }
 
         .category-items {
@@ -407,16 +408,21 @@
         .item-card {
             background: var(--input-bg);
             border: 1px solid var(--border);
+            border-left: 4px solid var(--border);
             border-radius: var(--radius-sm);
             padding: 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            transition: background 0.2s, border-color 0.2s, transform 0.15s;
+            animation: fadeInUp 0.35s ease both;
         }
+        .item-card:active { transform: scale(0.985); }
 
         .item-card.paid {
             background: rgba(16, 185, 129, 0.1);
             border-color: rgba(16, 185, 129, 0.35);
+            border-left-color: var(--green) !important;
         }
 
         .item-card.paid .item-title {
@@ -450,6 +456,7 @@
             color: #fff;
             font-size: 0.75rem;
             font-weight: 900;
+            animation: checkPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .item-info {
@@ -576,7 +583,7 @@
             border-radius: 99px;
         }
 
-        #celebration, #editModal {
+        #celebration, #editModal, #addModal {
             position: fixed;
             inset: 0;
             z-index: 1000;
@@ -589,16 +596,24 @@
 
         .celebrate-box, .modal-box {
             width: min(360px, 100%);
+            max-height: 88vh;
+            overflow-y: auto;
             position: relative;
             background: var(--surface);
             border-radius: var(--radius-lg);
             padding: 24px 20px 20px;
             text-align: center;
             box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+            animation: modalIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
         }
 
-        .trophy { font-size: 48px; display: block; margin-bottom: 10px; }
-        .celebrate-box h2 { font-size: 1.25rem; margin-bottom: 6px; font-weight: 800; }
+        .celebrate-box {
+            animation: celebratePop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+            overflow: visible;
+        }
+
+        .trophy { font-size: 48px; display: block; margin-bottom: 10px; animation: trophyBounce 1.1s ease-in-out 0.4s infinite; }
+        .celebrate-box h2 { font-size: 1.4rem; margin-bottom: 6px; font-weight: 800; }
         .celebrate-box p { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 14px; }
         .celebrate-highlight {
             background: #fef3c7;
@@ -608,6 +623,7 @@
             font-size: 0.8rem;
             font-weight: 800;
             margin-bottom: 16px;
+            animation: highlightGlow 1.6s ease-in-out infinite;
         }
         .celebrate-close {
             width: 100%;
@@ -675,6 +691,91 @@
         }
 
         #importFileInput { display: none; }
+
+        .fab {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 26px;
+            border-radius: 99px;
+            background: var(--accent-gradient);
+            color: #fff;
+            font-size: 0.88rem;
+            font-weight: 800;
+            box-shadow: 0 12px 28px var(--accent-glow);
+            z-index: 90;
+            transition: transform 0.15s;
+            white-space: nowrap;
+            animation: fabPulse 2.4s ease-in-out infinite;
+        }
+        .fab:active { transform: translateX(-50%) scale(0.95); }
+        .fab .fab-plus { font-size: 1.15rem; line-height: 1; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(18px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes celebratePop {
+            0% { opacity: 0; transform: scale(0.4) rotate(-8deg); }
+            60% { opacity: 1; transform: scale(1.08) rotate(2deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+        @keyframes trophyBounce {
+            0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+            25% { transform: translateY(-10px) scale(1.08) rotate(-6deg); }
+            50% { transform: translateY(0) scale(1) rotate(0deg); }
+            75% { transform: translateY(-5px) scale(1.04) rotate(6deg); }
+        }
+        @keyframes highlightGlow {
+            0%, 100% { box-shadow: 0 0 0 rgba(245, 158, 11, 0); }
+            50% { box-shadow: 0 0 22px rgba(245, 158, 11, 0.55); }
+        }
+        @keyframes checkPop {
+            0% { transform: scale(0.4); }
+            60% { transform: scale(1.25); }
+            100% { transform: scale(1); }
+        }
+        @keyframes fabPulse {
+            0%, 100% { box-shadow: 0 12px 28px var(--accent-glow); }
+            50% { box-shadow: 0 12px 34px var(--accent-glow), 0 0 0 8px rgba(219, 39, 119, 0.12); }
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(105vh) rotate(600deg); opacity: 0.9; }
+        }
+        @keyframes barPop {
+            0% { transform: scaleY(0.4); }
+            100% { transform: scaleY(1); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+            }
+        }
+
+        #confettiContainer {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .confetti-piece {
+            position: absolute;
+            top: -20px;
+            border-radius: 2px;
+            animation: confettiFall linear forwards;
+        }
     </style>
 </head>
 <body>
@@ -710,13 +811,37 @@
                 <span class="summary-title" id="summaryMonthTitle">Total do Mês</span>
             </div>
             <div class="summary-amount" id="totalMes">R$ 0,00</div>
-            <div class="summary-sub" id="summarySub"></div>
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar" style="width: 0%"></div>
             </div>
         </div>
 
-        <div class="card-form" id="formCardSection">
+        <div id="categoriesContainer"></div>
+
+        <div class="history-card" id="historyCardSection">
+            <div class="history-toggle" onclick="toggleHistory()">
+                <span>Histórico de Meses Anteriores</span>
+                <span id="historyArrow">▼</span>
+            </div>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <div id="celebration">
+        <div id="confettiContainer"></div>
+        <div class="celebrate-box">
+            <span class="trophy">🏆</span>
+            <h2>VOCÊ CONSEGUIU! 🎉</h2>
+            <p>Mais uma pendência saiu da frente com sucesso.</p>
+            <div class="celebrate-highlight" id="celebrateText">Parcela 10/10 concluída</div>
+            <button class="celebrate-close" onclick="closeCelebration()">Continuar</button>
+        </div>
+    </div>
+
+    <button class="fab" onclick="openAddModal()" title="Adicionar novo gasto" aria-label="Adicionar novo gasto"><span class="fab-plus">+</span> Novo Gasto</button>
+
+    <div id="addModal">
+        <div class="modal-box">
             <h2>✨ Novo Gasto</h2>
             <form id="expenseForm" onsubmit="addExpense(event)">
                 <div class="form-grid">
@@ -744,33 +869,16 @@
                     </div>
 
                     <div id="boxParcelado" style="display: none;">
-                        <input type="text" id="itemParcelaInput" placeholder="Ex: 8/10 (Atual / Total)" inputmode="numeric">
+                        <input type="text" id="itemParcelaInput" placeholder="Ex: 8/10 (Atual / Total)">
                         <div class="field-error" id="errParcela">Use o formato atual/total, ex: 8/10.</div>
                     </div>
 
-                    <button type="submit" class="btn-submit">Adicionar Gasto</button>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeAddModal()">Cancelar</button>
+                        <button type="submit" class="btn-submit">Adicionar</button>
+                    </div>
                 </div>
             </form>
-        </div>
-
-        <div id="categoriesContainer"></div>
-
-        <div class="history-card" id="historyCardSection">
-            <div class="history-toggle" onclick="toggleHistory()">
-                <span>Histórico de Meses Anteriores</span>
-                <span id="historyArrow">▼</span>
-            </div>
-            <div id="historyList"></div>
-        </div>
-    </div>
-
-    <div id="celebration">
-        <div class="celebrate-box">
-            <span class="trophy">🏆</span>
-            <h2>Quitado! 🎉</h2>
-            <p>Mais uma pendência saiu da frente com sucesso.</p>
-            <div class="celebrate-highlight" id="celebrateText">Parcela 10/10 concluída</div>
-            <button class="celebrate-close" onclick="closeCelebration()">Continuar</button>
         </div>
     </div>
 
@@ -798,7 +906,7 @@
                     <span>Dividir por 2</span>
                 </div>
                 <div id="editBoxParcelado" style="display:none;">
-                    <input type="text" id="editParcelaInput" placeholder="Ex: 8/10 (Atual / Total)" inputmode="numeric">
+                    <input type="text" id="editParcelaInput" placeholder="Ex: 8/10 (Atual / Total)">
                     <div class="field-error" id="editErrParcela">Use o formato atual/total, ex: 8/10.</div>
                 </div>
                 <div class="modal-actions">
@@ -813,10 +921,10 @@
 
     <script>
         const categories = [
-            { name: "Fixas de casa", icon: "🏠" },
-            { name: "Assinaturas", icon: "🎧" },
-            { name: "Parcelados", icon: "📦" },
-            { name: "Pontuais", icon: "⭐" }
+            { name: "Fixas de casa", icon: "🏠", color: "var(--cat-fixas)" },
+            { name: "Assinaturas", icon: "🎧", color: "var(--cat-assinaturas)" },
+            { name: "Parcelados", icon: "📦", color: "var(--cat-parcelados)" },
+            { name: "Pontuais", icon: "⭐", color: "var(--cat-pontuais)" }
         ];
 
         const MONTH_NAMES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
@@ -960,7 +1068,22 @@
         document.addEventListener('keydown', (e) => {
             if (e.key !== 'Escape') return;
             if (document.getElementById('editModal').style.display === 'grid') closeEditModal();
+            if (document.getElementById('addModal').style.display === 'grid') closeAddModal();
             if (document.getElementById('celebration').style.display === 'grid') closeCelebration();
+        });
+
+        function openAddModal() {
+            toggleCategoryFields();
+            document.getElementById('addModal').style.display = 'grid';
+            setTimeout(() => document.getElementById('itemName').focus(), 50);
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').style.display = 'none';
+        }
+
+        document.getElementById('addModal').addEventListener('click', (e) => {
+            if (e.target.id === 'addModal') closeAddModal();
         });
 
         function exportBackup() {
@@ -1104,8 +1227,8 @@
             setCustomCheckState('checkDivide', true);
             toggleCategoryFields();
             renderApp();
+            closeAddModal();
             showToast(`"${item.name}" adicionado.`);
-            nameEl.focus();
         }
 
         function togglePaid(id) {
@@ -1128,8 +1251,28 @@
             }
         }
 
+        function spawnConfetti() {
+            const container = document.getElementById('confettiContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            const colors = ['#f472b6', '#a78bfa', '#22d3ee', '#fbbf24', '#34d399', '#db2777'];
+            const count = 46;
+            for (let i = 0; i < count; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = `${Math.random() * 100}%`;
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.width = `${5 + Math.random() * 6}px`;
+                piece.style.height = `${9 + Math.random() * 9}px`;
+                piece.style.animationDuration = `${1.8 + Math.random() * 1.6}s`;
+                piece.style.animationDelay = `${Math.random() * 0.5}s`;
+                container.appendChild(piece);
+            }
+        }
+
         function showCelebration(item) {
             document.getElementById('celebrateText').innerText = `Parcela ${item.parcelaAtual}/${item.parcelaTotal} de ${item.name} concluída`;
+            spawnConfetti();
             document.getElementById('celebration').style.display = 'grid';
         }
 
@@ -1312,9 +1455,7 @@
 
         function exportPDF() {
             const element = document.getElementById('pdfContent');
-            const formCard = document.getElementById('formCardSection');
             const historyCard = document.getElementById('historyCardSection');
-            formCard.style.display = 'none';
             historyCard.style.display = 'none';
 
             const opt = {
@@ -1326,10 +1467,8 @@
             };
 
             html2pdf().from(element).set(opt).save().then(() => {
-                formCard.style.display = 'block';
                 historyCard.style.display = 'block';
             }).catch(() => {
-                formCard.style.display = 'block';
                 historyCard.style.display = 'block';
                 showToast('Não foi possível gerar o PDF. Tente novamente.');
             });
@@ -1370,26 +1509,24 @@
 
             document.getElementById('totalMes').innerText = fmt(total);
             document.getElementById('progressBar').style.width = `${percent}%`;
-            const remaining = Math.max(total - totalPago, 0);
-            document.getElementById('summarySub').innerText = items.length
-                ? `${fmt(totalPago)} pago • ${fmt(remaining)} restante (${percent}%)`
-                : '';
         }
 
         function renderCategories() {
             const container = document.getElementById('categoriesContainer');
             container.innerHTML = '';
             const items = appData.months[activeMonth] || [];
+            let itemStagger = 0;
 
-            categories.forEach(catObj => {
+            categories.forEach((catObj, catIdx) => {
                 const catItems = items.filter(i => i.cat === catObj.name);
                 const catTotal = catItems.reduce((acc, i) => acc + i.val, 0);
 
                 let section = document.createElement('div');
                 section.className = 'category-section';
+                section.style.animationDelay = `${catIdx * 60}ms`;
                 section.innerHTML = `
                     <div class="category-header">
-                        <span>${catObj.icon} ${catObj.name}</span>
+                        <span class="category-header-left"><span class="cat-icon-badge" style="background:${catObj.color}">${catObj.icon}</span>${catObj.name}</span>
                         <span>${fmt(catTotal)}</span>
                     </div>
                     <div class="category-items"></div>
@@ -1414,6 +1551,9 @@
 
                         const div = document.createElement('div');
                         div.className = `item-card ${item.paid ? 'paid' : ''}`;
+                        if (!item.paid) div.style.borderLeftColor = catObj.color;
+                        div.style.animationDelay = `${Math.min(itemStagger * 35, 350)}ms`;
+                        itemStagger++;
                         div.innerHTML = `
                             <div class="item-left">
                                 <div class="checkbox-custom" role="checkbox" aria-checked="${item.paid}" tabindex="0" aria-label="Marcar ${item.name} como ${item.paid ? 'pendente' : 'pago'}"
