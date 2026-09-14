@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pocket • Smart Wallet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --bg: #f4f6f9;
+            --surface: #ffffff;
+            --surface-hover: #f8fafc;
+            --border: #e2e8f0;
+            --border-focus: #4f46e5;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent: #4f46e5;
+            --accent-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --accent-glow: rgba(79, 70, 229, 0.25);
+            --card-summary-bg: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            --green: #10b981;
+            --gold: #f59e0b;
+            --red: #ef4444;
+            --radius-lg: 26px;
+            --radius-md: 18px;
+            --radius-sm: 12px;
+            --shadow: 0 15px 35px -10px rgba(30, 27, 75, 0.1);
+            --shadow-sm: 0 3px 12px rgba(15, 23, 42, 0.03);
+            --input-bg: #f8fafc;
+        }
+
+        body.dark {
+            --bg: #0b0f19;
+            --surface: #131a2b;
+            --surface-hover: #182036;
+            --border: #232c42;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --card-summary-bg: linear-gradient(135deg, #1e1b4b 0%, #2b2470 100%);
+            --shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.4);
+            --shadow-sm: 0 3px 12px rgba(0, 0, 0, 0.2);
+            --input-bg: #182036;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 10% 0%, rgba(79, 70, 229, 0.07), transparent 45%),
+                radial-gradient(circle at 90% 100%, rgba(124, 58, 237, 0.05), transparent 45%);
+            color: var(--text-main);
+            padding: 16px 12px 100px;
+            max-width: 480px;
+            margin: auto;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        button, input, select { font: inherit; }
+        button { cursor: pointer; border: none; background: none; }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-sm);
+            display: grid;
+            place-items: center;
+            background: var(--accent-gradient);
+            color: #fff;
+            box-shadow: 0 8px 20px var(--accent-glow);
+            font-size: 20px;
+        }
+
+        .brand h1 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+
+        .brand small {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.68rem;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .icon-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            display: grid;
+            place-items: center;
+            font-size: 0.95rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+        }
+
+        .icon-btn:active { transform: scale(0.95); }
+
+        .menu-wrap { position: relative; }
+        .menu-dropdown {
+            position: absolute;
+            right: 0;
+            top: 46px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow);
+            min-width: 190px;
+            padding: 6px;
+            display: none;
+            z-index: 50;
+        }
+        .menu-dropdown.open { display: block; }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-align: left;
+        }
+        .menu-item:hover { background: var(--surface-hover); }
+
+        .tabs-container {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            margin-bottom: 16px;
+            scrollbar-width: none;
+            align-items: center;
+        }
+        .tabs-container::-webkit-scrollbar { display: none; }
+
+        .tab-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 99px;
+            padding: 2px 2px 2px 12px;
+            gap: 6px;
+            box-shadow: var(--shadow-sm);
+            white-space: nowrap;
+        }
+
+        .tab-wrapper.active {
+            background: var(--accent-gradient);
+            border-color: transparent;
+            box-shadow: 0 6px 20px var(--accent-glow);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 6px 0;
+            cursor: pointer;
+        }
+
+        .tab-wrapper.active .tab-btn { color: #fff; }
+
+        .tab-delete {
+            background: rgba(0,0,0,0.06);
+            border: none;
+            color: var(--text-muted);
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 0.6rem;
+            cursor: pointer;
+        }
+
+        .tab-wrapper.active .tab-delete {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        .card-summary {
+            background: var(--card-summary-bg);
+            color: #fff;
+            border-radius: var(--radius-lg);
+            padding: 22px 20px;
+            margin-bottom: 18px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .summary-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #c7d2fe;
+            font-weight: 800;
+        }
+
+        .summary-toggle {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: #c7d2fe;
+            background: rgba(255,255,255,0.12);
+            padding: 5px 10px;
+            border-radius: 99px;
+        }
+
+        .summary-amount {
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: -1.2px;
+            margin-bottom: 14px;
+            color: #fff;
+        }
+
+        .progress-container {
+            height: 7px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc);
+            border-radius: 99px;
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .card-form {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-form h2 {
+            font-size: 0.85rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 0.85rem;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .field-error {
+            font-size: 0.68rem;
+            color: var(--red);
+            font-weight: 700;
+            display: none;
+            padding: 0 2px;
+        }
+        .field-error.show { display: block; }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            padding: 2px 0;
+            cursor: pointer;
+        }
+
+        .checkbox-row input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            border-radius: 4px;
+        }
+
+        .btn-submit {
+            background: var(--accent-gradient);
+            color: #fff;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.88rem;
+            font-weight: 800;
+            box-shadow: 0 6px 18px var(--accent-glow);
+        }
+
+        .btn-submit:active { transform: scale(0.98); }
+
+        .category-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+        }
+
+        .category-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .item-card {
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .item-card.paid {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.35);
+        }
+
+        .item-card.paid .item-title {
+            text-decoration: line-through;
+            opacity: 0.75;
+        }
+
+        .item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .checkbox-custom {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e1;
+            background: var(--surface);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .checkbox-custom:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .item-card.paid .checkbox-custom {
+            background: var(--green);
+            border-color: var(--green);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 900;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .item-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .item-meta {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .badge {
+            background: var(--border);
+            color: var(--text-muted);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .badge.festive-badge {
+            background: var(--gold);
+            color: #fff;
+        }
+
+        .item-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .item-price {
+            font-size: 0.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-align: right;
+            color: var(--text-main);
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: var(--red);
+            opacity: 0.5;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 4px;
+        }
+
+        .btn-delete:hover { opacity: 1; }
+
+        .history-card, .chart-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-top: 18px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .history-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            font-weight: 800;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        #historyList {
+            margin-top: 10px;
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .history-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .history-row-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .history-bar-bg {
+            height: 5px;
+            background: var(--border);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        .history-bar-fill {
+            height: 100%;
+            background: var(--green);
+            border-radius: 99px;
+        }
+
+        .chart-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+        .chart-row-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .chart-bar-bg {
+            height: 8px;
+            background: var(--border);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        .chart-bar-fill {
+            height: 100%;
+            background: var(--accent-gradient);
+            border-radius: 99px;
+            transition: width 0.5s ease;
+        }
+
+        #celebration, #editModal {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: none;
+            place-items: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+        }
+
+        .celebrate-box, .modal-box {
+            width: min(360px, 100%);
+            position: relative;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 24px 20px 20px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+        }
+
+        .trophy { font-size: 48px; display: block; margin-bottom: 10px; }
+        .celebrate-box h2 { font-size: 1.25rem; margin-bottom: 6px; font-weight: 800; }
+        .celebrate-box p { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 14px; }
+        .celebrate-highlight {
+            background: #fef3c7;
+            color: #d97706;
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+        .celebrate-close {
+            width: 100%;
+            background: var(--accent-gradient);
+            color: #fff;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 800;
+        }
+
+        .modal-box h2 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 14px;
+            text-align: left;
+        }
+        .modal-box .form-grid { text-align: left; }
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .btn-secondary {
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 800;
+            font-size: 0.85rem;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #0f172a;
+            color: #fff;
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            max-width: 90vw;
+        }
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+        #toast button {
+            color: #93c5fd;
+            font-weight: 800;
+            font-size: 0.78rem;
+            flex-shrink: 0;
+        }
+
+        #importFileInput { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="pdfContent">
+        <header>
+            <div class="brand">
+                <div class="brand-mark">✦</div>
+                <div>
+                    <h1>Pocket</h1>
+                    <small>Smart Wallet</small>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="toggleDarkMode()" id="darkModeBtn" title="Alternar tema">🌙</button>
+                <button class="icon-btn" onclick="exportPDF()" title="Baixar PDF">📥</button>
+                <button class="icon-btn" onclick="advanceToNextMonth()" title="Avançar Mês" style="font-weight: 800; font-size: 0.75rem;">+Mês</button>
+                <div class="menu-wrap">
+                    <button class="icon-btn" onclick="toggleMenu()" title="Mais opções">⋮</button>
+                    <div class="menu-dropdown" id="menuDropdown">
+                        <button class="menu-item" onclick="exportBackup()">💾 Exportar backup (JSON)</button>
+                        <button class="menu-item" onclick="document.getElementById('importFileInput').click()">📤 Importar backup</button>
+                    </div>
+                </div>
+                <input type="file" id="importFileInput" accept="application/json" onchange="importBackup(event)">
+            </div>
+        </header>
+
+        <div class="tabs-container" id="tabsContainer"></div>
+
+        <div class="card-summary">
+            <div class="summary-header">
+                <span class="summary-title" id="summaryMonthTitle">Total do Mês</span>
+            </div>
+            <div class="summary-amount" id="totalMes">R$ 0,00</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="card-form" id="formCardSection">
+            <h2>✨ Novo Gasto</h2>
+            <form id="expenseForm" onsubmit="addExpense(event)">
+                <div class="form-grid">
+                    <div>
+                        <input type="text" id="itemName" placeholder="Nome do item (ex: Aluguel, Netflix...)" required>
+                        <div class="field-error" id="errName">Digite um nome válido.</div>
+                    </div>
+                    <div class="input-row">
+                        <div>
+                            <input type="number" step="0.01" min="0.01" id="itemVal" placeholder="Valor Cheio (R$)" required>
+                            <div class="field-error" id="errVal">Informe um valor maior que zero.</div>
+                        </div>
+                        <select id="itemCat" onchange="toggleCategoryFields()">
+                            <option value="Fixas de casa">Fixas de casa</option>
+                            <option value="Assinaturas">Assinaturas</option>
+                            <option value="Parcelados">Parcelados</option>
+                            <option value="Pontuais">Pontuais</option>
+                        </select>
+                    </div>
+
+                    <div id="boxDivide" class="checkbox-row">
+                        <input type="checkbox" id="checkDivide" checked>
+                        <label for="checkDivide">Dividir por 2</label>
+                    </div>
+
+                    <div id="boxParcelado" style="display: none;">
+                        <input type="text" id="itemParcelaInput" placeholder="Ex: 8/10 (Atual / Total)">
+                        <div class="field-error" id="errParcela">Use o formato atual/total, ex: 8/10.</div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Adicionar Gasto</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="categoriesContainer"></div>
+
+        <div class="chart-card" id="chartCardSection">
+            <div class="history-toggle" onclick="toggleChart()">
+                <span>📊 Gastos por Categoria</span>
+                <span id="chartArrow">▼</span>
+            </div>
+            <div id="chartBody" style="display:none; margin-top: 12px;"></div>
+        </div>
+
+        <div class="history-card" id="historyCardSection">
+            <div class="history-toggle" onclick="toggleHistory()">
+                <span>Histórico de Meses Anteriores</span>
+                <span id="historyArrow">▼</span>
+            </div>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <div id="celebration">
+        <div class="celebrate-box">
+            <span class="trophy">🏆</span>
+            <h2>Quitado! 🎉</h2>
+            <p>Mais uma pendência saiu da frente com sucesso.</p>
+            <div class="celebrate-highlight" id="celebrateText">Parcela 10/10 concluída</div>
+            <button class="celebrate-close" onclick="closeCelebration()">Continuar</button>
+        </div>
+    </div>
+
+    <div id="editModal">
+        <div class="modal-box">
+            <h2 id="editModalTitle">Editar Item</h2>
+            <div class="form-grid">
+                <div>
+                    <input type="text" id="editName" placeholder="Nome do item">
+                    <div class="field-error" id="editErrName">Digite um nome válido.</div>
+                </div>
+                <select id="editCat" onchange="toggleEditCategoryFields()">
+                    <option value="Fixas de casa">Fixas de casa</option>
+                    <option value="Assinaturas">Assinaturas</option>
+                    <option value="Parcelados">Parcelados</option>
+                    <option value="Pontuais">Pontuais</option>
+                </select>
+                <div>
+                    <input type="number" step="0.01" min="0.01" id="editVal" placeholder="Valor (R$)">
+                    <div class="field-error" id="editErrVal">Informe um valor maior que zero.</div>
+                </div>
+                <div id="editBoxDivide" class="checkbox-row">
+                    <input type="checkbox" id="editCheckDivide">
+                    <label for="editCheckDivide">Dividir por 2</label>
+                </div>
+                <div id="editBoxParcelado" style="display:none;">
+                    <input type="text" id="editParcelaInput" placeholder="Ex: 8/10 (Atual / Total)">
+                    <div class="field-error" id="editErrParcela">Use o formato atual/total, ex: 8/10.</div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="closeEditModal()">Cancelar</button>
+                    <button class="btn-submit" onclick="saveEditModal()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        const categories = [
+            { name: "Fixas de casa", icon: "🏠" },
+            { name: "Assinaturas", icon: "🎧" },
+            { name: "Parcelados", icon: "📦" },
+            { name: "Pontuais", icon: "⭐" }
+        ];
+
+        const STORAGE_KEY = 'smart_wallet_v14';
+        const OLD_STORAGE_KEY = 'smart_wallet_v13';
+
+        function genId() {
+            return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+        }
+
+        function migrateHistoryEntry(val) {
+            // legacy history stored a single number (total only)
+            if (typeof val === 'number') return { total: val, paid: val };
+            return val;
+        }
+
+        function loadAppData() {
+            let raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) {
+                // try migrating from previous version
+                const legacy = localStorage.getItem(OLD_STORAGE_KEY);
+                if (legacy) {
+                    try {
+                        const parsed = JSON.parse(legacy);
+                        Object.keys(parsed.history || {}).forEach(m => {
+                            parsed.history[m] = migrateHistoryEntry(parsed.history[m]);
+                        });
+                        return parsed;
+                    } catch (e) { /* fall through to default */ }
+                }
+                return null;
+            }
+            try {
+                const parsed = JSON.parse(raw);
+                Object.keys(parsed.history || {}).forEach(m => {
+                    parsed.history[m] = migrateHistoryEntry(parsed.history[m]);
+                });
+                return parsed;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        let appData = loadAppData() || {
+            currentMonth: "Outubro 2026",
+            darkMode: false,
+            months: {
+                "Outubro 2026": [
+                    { id: genId(), name: "Aluguel", val: 991.00, originalVal: 1982.00, cat: "Fixas de casa", paid: false },
+                    { id: genId(), name: "Eletricidade", val: 123.50, originalVal: 247.00, cat: "Fixas de casa", paid: false },
+                    { id: genId(), name: "Internet", val: 26.50, originalVal: 53.00, cat: "Fixas de casa", paid: false },
+                    { id: genId(), name: "Celular", val: 80.00, cat: "Assinaturas", paid: false },
+                    { id: genId(), name: "DJI Camera", val: 154.00, cat: "Parcelados", parcelaAtual: 8, parcelaTotal: 10, paid: false }
+                ]
+            },
+            history: {}
+        };
+
+        let activeMonth = appData.currentMonth;
+        if (!appData.months[activeMonth]) activeMonth = Object.keys(appData.months)[0];
+
+        let toastTimeout = null;
+        let editingItemId = null;
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+        }
+
+        function fmt(v) {
+            return (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function clearFieldErrors(prefix) {
+            document.querySelectorAll(`[id^="${prefix}Err"]`).forEach(el => el.classList.remove('show'));
+        }
+
+        // ---------- Dark mode ----------
+        function applyDarkMode() {
+            document.body.classList.toggle('dark', !!appData.darkMode);
+            document.getElementById('darkModeBtn').innerText = appData.darkMode ? '☀️' : '🌙';
+        }
+        function toggleDarkMode() {
+            appData.darkMode = !appData.darkMode;
+            saveData();
+            applyDarkMode();
+        }
+
+        // ---------- Header menu ----------
+        function toggleMenu() {
+            document.getElementById('menuDropdown').classList.toggle('open');
+        }
+        document.addEventListener('click', (e) => {
+            const wrap = document.querySelector('.menu-wrap');
+            if (wrap && !wrap.contains(e.target)) {
+                document.getElementById('menuDropdown').classList.remove('open');
+            }
+        });
+
+        // ---------- Backup export / import ----------
+        function exportBackup() {
+            const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `pocket_backup_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            document.getElementById('menuDropdown').classList.remove('open');
+        }
+
+        function importBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (!parsed.months || typeof parsed.months !== 'object') {
+                        throw new Error('Formato inválido');
+                    }
+                    if (!confirm('Importar este backup vai substituir todos os dados atuais. Continuar?')) return;
+                    Object.keys(parsed.history || {}).forEach(m => {
+                        parsed.history[m] = migrateHistoryEntry(parsed.history[m]);
+                    });
+                    appData = parsed;
+                    activeMonth = appData.currentMonth && appData.months[appData.currentMonth]
+                        ? appData.currentMonth
+                        : Object.keys(appData.months)[0];
+                    saveData();
+                    applyDarkMode();
+                    renderApp();
+                    showToast('Backup importado com sucesso.');
+                } catch (err) {
+                    alert('Não foi possível importar este arquivo. Verifique se é um backup válido do Pocket.');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+            document.getElementById('menuDropdown').classList.remove('open');
+        }
+
+        // ---------- Toast / undo ----------
+        function showToast(message, undoFn) {
+            const toast = document.getElementById('toast');
+            clearTimeout(toastTimeout);
+            toast.innerHTML = `<span>${message}</span>`;
+            if (undoFn) {
+                const btn = document.createElement('button');
+                btn.innerText = 'DESFAZER';
+                btn.onclick = () => { undoFn(); toast.classList.remove('show'); };
+                toast.appendChild(btn);
+            }
+            toast.classList.add('show');
+            toastTimeout = setTimeout(() => toast.classList.remove('show'), 5000);
+        }
+
+        // ---------- Form: new expense ----------
+        function toggleCategoryFields() {
+            const cat = document.getElementById('itemCat').value;
+            const boxDivide = document.getElementById('boxDivide');
+            const boxParcelado = document.getElementById('boxParcelado');
+
+            if (cat === 'Fixas de casa' || cat === 'Pontuais') {
+                boxDivide.style.display = 'flex';
+                if (cat === 'Fixas de casa') {
+                    document.getElementById('checkDivide').checked = true;
+                }
+            } else {
+                boxDivide.style.display = 'none';
+            }
+
+            boxParcelado.style.display = (cat === 'Parcelados') ? 'block' : 'none';
+        }
+
+        function addExpense(e) {
+            e.preventDefault();
+            clearFieldErrors('err');
+
+            const nameEl = document.getElementById('itemName');
+            const valEl = document.getElementById('itemVal');
+            const name = nameEl.value.trim();
+            const valInput = parseFloat(valEl.value);
+            const cat = document.getElementById('itemCat').value;
+
+            let hasError = false;
+            if (!name) {
+                document.getElementById('errName').classList.add('show');
+                hasError = true;
+            }
+            if (isNaN(valInput) || valInput <= 0) {
+                document.getElementById('errVal').classList.add('show');
+                hasError = true;
+            }
+
+            let parcelaAtual, parcelaTotal;
+            if (cat === 'Parcelados') {
+                const pInput = document.getElementById('itemParcelaInput').value.trim();
+                const parts = pInput.split('/');
+                parcelaAtual = parseInt(parts[0]);
+                parcelaTotal = parseInt(parts[1]);
+                if (!parcelaAtual || !parcelaTotal || parcelaAtual < 1 || parcelaTotal < 1 || parcelaAtual > parcelaTotal) {
+                    document.getElementById('errParcela').classList.add('show');
+                    hasError = true;
+                }
+            }
+
+            if (hasError) return;
+
+            let item = { id: genId(), name, cat, paid: false };
+
+            if (cat === 'Fixas de casa' || cat === 'Pontuais') {
+                const divide = document.getElementById('checkDivide').checked;
+                if (divide) {
+                    item.originalVal = valInput;
+                    item.val = valInput / 2;
+                } else {
+                    item.val = valInput;
+                }
+            } else if (cat === 'Parcelados') {
+                item.val = valInput;
+                item.parcelaAtual = parcelaAtual;
+                item.parcelaTotal = parcelaTotal;
+            } else {
+                item.val = valInput;
+            }
+
+            if (!appData.months[activeMonth]) appData.months[activeMonth] = [];
+            appData.months[activeMonth].push(item);
+
+            saveData();
+            document.getElementById('expenseForm').reset();
+            toggleCategoryFields();
+            renderApp();
+        }
+
+        function togglePaid(id) {
+            const item = appData.months[activeMonth].find(i => i.id === id);
+            if (!item) return;
+            const wasPaid = item.paid;
+            item.paid = !item.paid;
+            saveData();
+            renderApp();
+
+            if (!wasPaid && item.cat === 'Parcelados' && Number(item.parcelaAtual) === Number(item.parcelaTotal) && item.paid) {
+                showCelebration(item);
+            }
+        }
+
+        function checkboxKeydown(e, id) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                togglePaid(id);
+            }
+        }
+
+        function showCelebration(item) {
+            document.getElementById('celebrateText').innerText = `Parcela ${item.parcelaAtual}/${item.parcelaTotal} de ${item.name} concluída`;
+            document.getElementById('celebration').style.display = 'grid';
+        }
+
+        function closeCelebration() {
+            document.getElementById('celebration').style.display = 'none';
+        }
+
+        // ---------- Delete with undo ----------
+        function deleteItem(id) {
+            const idx = appData.months[activeMonth].findIndex(i => i.id === id);
+            if (idx === -1) return;
+            const item = appData.months[activeMonth][idx];
+            const monthAtDeletion = activeMonth;
+
+            appData.months[activeMonth].splice(idx, 1);
+            saveData();
+            renderApp();
+
+            showToast(`"${item.name}" excluído.`, () => {
+                if (!appData.months[monthAtDeletion]) appData.months[monthAtDeletion] = [];
+                appData.months[monthAtDeletion].splice(idx, 0, item);
+                saveData();
+                if (activeMonth === monthAtDeletion) renderApp();
+            });
+        }
+
+        function deleteMonth(monthName, event) {
+            event.stopPropagation();
+            const keys = Object.keys(appData.months);
+            if (keys.length <= 1) {
+                alert("Você não pode excluir o único mês restante.");
+                return;
+            }
+            if (confirm(`Deseja realmente excluir o mês de ${monthName}?`)) {
+                delete appData.months[monthName];
+                if (appData.history[monthName]) delete appData.history[monthName];
+
+                const remainingMonths = Object.keys(appData.months);
+                activeMonth = remainingMonths[remainingMonths.length - 1];
+                appData.currentMonth = activeMonth;
+                saveData();
+                renderApp();
+            }
+        }
+
+        // ---------- Edit modal ----------
+        function toggleEditCategoryFields() {
+            const cat = document.getElementById('editCat').value;
+            const boxDivide = document.getElementById('editBoxDivide');
+            const boxParcelado = document.getElementById('editBoxParcelado');
+            boxDivide.style.display = (cat === 'Fixas de casa' || cat === 'Pontuais') ? 'flex' : 'none';
+            boxParcelado.style.display = (cat === 'Parcelados') ? 'block' : 'none';
+        }
+
+        function openEditModal(id) {
+            const item = appData.months[activeMonth].find(i => i.id === id);
+            if (!item) return;
+            editingItemId = id;
+            clearFieldErrors('editErr');
+
+            document.getElementById('editModalTitle').innerText = `Editar "${item.name}"`;
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editCat').value = item.cat;
+            document.getElementById('editVal').value = item.originalVal !== undefined ? item.originalVal : item.val;
+            document.getElementById('editCheckDivide').checked = item.originalVal !== undefined;
+            document.getElementById('editParcelaInput').value = item.cat === 'Parcelados' ? `${item.parcelaAtual}/${item.parcelaTotal}` : '';
+
+            toggleEditCategoryFields();
+            document.getElementById('editModal').style.display = 'grid';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            editingItemId = null;
+        }
+
+        function saveEditModal() {
+            clearFieldErrors('editErr');
+            const item = appData.months[activeMonth].find(i => i.id === editingItemId);
+            if (!item) return closeEditModal();
+
+            const name = document.getElementById('editName').value.trim();
+            const cat = document.getElementById('editCat').value;
+            const valInput = parseFloat(document.getElementById('editVal').value);
+
+            let hasError = false;
+            if (!name) {
+                document.getElementById('editErrName').classList.add('show');
+                hasError = true;
+            }
+            if (isNaN(valInput) || valInput <= 0) {
+                document.getElementById('editErrVal').classList.add('show');
+                hasError = true;
+            }
+
+            let parcelaAtual, parcelaTotal;
+            if (cat === 'Parcelados') {
+                const pInput = document.getElementById('editParcelaInput').value.trim();
+                const parts = pInput.split('/');
+                parcelaAtual = parseInt(parts[0]);
+                parcelaTotal = parseInt(parts[1]);
+                if (!parcelaAtual || !parcelaTotal || parcelaAtual < 1 || parcelaTotal < 1 || parcelaAtual > parcelaTotal) {
+                    document.getElementById('editErrParcela').classList.add('show');
+                    hasError = true;
+                }
+            }
+
+            if (hasError) return;
+
+            item.name = name;
+            item.cat = cat;
+            delete item.originalVal;
+            delete item.parcelaAtual;
+            delete item.parcelaTotal;
+
+            if (cat === 'Fixas de casa' || cat === 'Pontuais') {
+                if (document.getElementById('editCheckDivide').checked) {
+                    item.originalVal = valInput;
+                    item.val = valInput / 2;
+                } else {
+                    item.val = valInput;
+                }
+            } else if (cat === 'Parcelados') {
+                item.val = valInput;
+                item.parcelaAtual = parcelaAtual;
+                item.parcelaTotal = parcelaTotal;
+            } else {
+                item.val = valInput;
+            }
+
+            saveData();
+            closeEditModal();
+            renderApp();
+        }
+
+        // ---------- Month navigation ----------
+        function advanceToNextMonth() {
+            const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            const parts = activeMonth.split(' ');
+            let mIndex = monthNames.indexOf(parts[0]);
+            let year = parseInt(parts[1]) || 2026;
+            mIndex++;
+            if (mIndex > 11) { mIndex = 0; year++; }
+            const nextMonthName = `${monthNames[mIndex]} ${year}`;
+
+            if (!appData.months[nextMonthName]) {
+                const currentItems = appData.months[activeMonth] || [];
+                const currentTotal = currentItems.reduce((acc, i) => acc + i.val, 0);
+                const currentPaid = currentItems.filter(i => i.paid).reduce((acc, i) => acc + i.val, 0);
+                appData.history[activeMonth] = { total: currentTotal, paid: currentPaid };
+
+                let newMonthItems = [];
+                currentItems.forEach(item => {
+                    if (item.cat === 'Fixas de casa' || item.cat === 'Assinaturas') {
+                        newMonthItems.push({ ...item, id: genId(), paid: false });
+                    } else if (item.cat === 'Parcelados') {
+                        let nextParcela = item.parcelaAtual + 1;
+                        if (nextParcela <= item.parcelaTotal) {
+                            newMonthItems.push({
+                                ...item,
+                                id: genId(),
+                                parcelaAtual: nextParcela,
+                                paid: false
+                            });
+                        }
+                    }
+                });
+                appData.months[nextMonthName] = newMonthItems;
+            }
+
+            activeMonth = nextMonthName;
+            appData.currentMonth = activeMonth;
+            saveData();
+            renderApp();
+        }
+
+        function exportPDF() {
+            const element = document.getElementById('pdfContent');
+            const formCard = document.getElementById('formCardSection');
+            const historyCard = document.getElementById('historyCardSection');
+            const chartCard = document.getElementById('chartCardSection');
+            formCard.style.display = 'none';
+            historyCard.style.display = 'none';
+            chartCard.style.display = 'none';
+
+            const opt = {
+                margin:       10,
+                filename:     `smart_wallet_${activeMonth.toLowerCase().replace(' ', '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#f4f6f9' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().from(element).set(opt).save().then(() => {
+                formCard.style.display = 'block';
+                historyCard.style.display = 'block';
+                chartCard.style.display = 'block';
+            });
+        }
+
+        // ---------- Render ----------
+        function renderTabs() {
+            const container = document.getElementById('tabsContainer');
+            container.innerHTML = '';
+            Object.keys(appData.months).forEach(m => {
+                const wrapper = document.createElement('div');
+                wrapper.className = `tab-wrapper ${m === activeMonth ? 'active' : ''}`;
+
+                const btn = document.createElement('button');
+                btn.className = 'tab-btn';
+                btn.innerText = m;
+                btn.onclick = () => { activeMonth = m; renderApp(); };
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'tab-delete';
+                delBtn.innerHTML = '✕';
+                delBtn.title = 'Excluir mês';
+                delBtn.onclick = (e) => deleteMonth(m, e);
+
+                wrapper.appendChild(btn);
+                wrapper.appendChild(delBtn);
+                container.appendChild(wrapper);
+            });
+            document.getElementById('summaryMonthTitle').innerText = `Total • ${activeMonth}`;
+        }
+
+        function renderSummary() {
+            const items = appData.months[activeMonth] || [];
+            const total = items.reduce((acc, i) => acc + i.val, 0);
+            const totalPago = items.filter(i => i.paid).reduce((acc, i) => acc + i.val, 0);
+            const percent = total > 0 ? Math.round((totalPago / total) * 100) : 0;
+
+            document.getElementById('totalMes').innerText = fmt(total);
+            document.getElementById('progressBar').style.width = `${percent}%`;
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+            container.innerHTML = '';
+            const items = appData.months[activeMonth] || [];
+
+            categories.forEach(catObj => {
+                const catItems = items.filter(i => i.cat === catObj.name);
+                const catTotal = catItems.reduce((acc, i) => acc + i.val, 0);
+
+                let section = document.createElement('div');
+                section.className = 'category-section';
+                section.innerHTML = `
+                    <div class="category-header">
+                        <span>${catObj.icon} ${catObj.name}</span>
+                        <span>${fmt(catTotal)}</span>
+                    </div>
+                    <div class="category-items"></div>
+                `;
+                container.appendChild(section);
+
+                const listEl = section.querySelector('.category-items');
+                if (catItems.length === 0) {
+                    listEl.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted); padding: 4px 0;">Nenhum item adicionado.</div>`;
+                } else {
+                    catItems.forEach(item => {
+                        let metaHtml = '';
+
+                        if (item.originalVal !== undefined) {
+                            metaHtml += `<span class="badge">Sua parte: R$ ${item.val.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>`;
+                        }
+
+                        if (item.cat === 'Parcelados') {
+                            let isFestive = (item.parcelaAtual === item.parcelaTotal);
+                            metaHtml = `<span class="badge ${isFestive ? 'festive-badge' : ''}">${isFestive ? '🏆 Última' : `Parc ${item.parcelaAtual}/${item.parcelaTotal}`}</span>`;
+                        }
+
+                        const div = document.createElement('div');
+                        div.className = `item-card ${item.paid ? 'paid' : ''}`;
+                        div.innerHTML = `
+                            <div class="item-left">
+                                <div class="checkbox-custom" role="checkbox" aria-checked="${item.paid}" tabindex="0"
+                                     onclick="togglePaid('${item.id}')" onkeydown="checkboxKeydown(event, '${item.id}')">
+                                    ${item.paid ? '✓' : ''}
+                                </div>
+                                <div class="item-info">
+                                    <span class="item-title" onclick="openEditModal('${item.id}')" title="Editar item">${item.name}</span>
+                                    <div class="item-meta">${metaHtml}</div>
+                                </div>
+                            </div>
+                            <div class="item-right">
+                                <div class="item-price" onclick="openEditModal('${item.id}')" title="Editar item">${fmt(item.originalVal !== undefined ? item.originalVal : item.val)}</div>
+                                <button class="btn-delete" onclick="deleteItem('${item.id}')" title="Excluir">✕</button>
+                            </div>
+                        `;
+                        listEl.appendChild(div);
+                    });
+                }
+            });
+        }
+
+        function renderChart() {
+            const body = document.getElementById('chartBody');
+            const items = appData.months[activeMonth] || [];
+            const total = items.reduce((acc, i) => acc + i.val, 0);
+
+            if (total === 0) {
+                body.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted);">Sem gastos neste mês ainda.</div>`;
+                return;
+            }
+
+            body.innerHTML = '';
+            categories.forEach(catObj => {
+                const catTotal = items.filter(i => i.cat === catObj.name).reduce((acc, i) => acc + i.val, 0);
+                const pct = total > 0 ? Math.round((catTotal / total) * 100) : 0;
+                const row = document.createElement('div');
+                row.className = 'chart-row';
+                row.innerHTML = `
+                    <div class="chart-row-top">
+                        <span>${catObj.icon} ${catObj.name}</span>
+                        <span>${fmt(catTotal)} · ${pct}%</span>
+                    </div>
+                    <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${pct}%"></div></div>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            container.innerHTML = '';
+            const historyObj = appData.history || {};
+            if (Object.keys(historyObj).length === 0) {
+                container.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted);">Nenhum histórico registrado.</div>`;
+                return;
+            }
+            for (let [m, entry] of Object.entries(historyObj)) {
+                const total = entry.total || 0;
+                const paid = entry.paid || 0;
+                const pct = total > 0 ? Math.round((paid / total) * 100) : 0;
+                let div = document.createElement('div');
+                div.className = 'history-row';
+                div.innerHTML = `
+                    <div class="history-row-top">
+                        <span>${m}</span>
+                        <span style="color: var(--text-muted);">${fmt(paid)} / ${fmt(total)}</span>
+                    </div>
+                    <div class="history-bar-bg"><div class="history-bar-fill" style="width:${pct}%"></div></div>
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        function toggleHistory() {
+            const list = document.getElementById('historyList');
+            const arrow = document.getElementById('historyArrow');
+            const open = list.style.display === 'flex';
+            list.style.display = open ? 'none' : 'flex';
+            arrow.innerText = open ? '▼' : '▲';
+        }
+
+        function toggleChart() {
+            const body = document.getElementById('chartBody');
+            const arrow = document.getElementById('chartArrow');
+            const open = body.style.display === 'block';
+            body.style.display = open ? 'none' : 'block';
+            arrow.innerText = open ? '▼' : '▲';
+        }
+
+        function renderApp() {
+            if (!appData.months[activeMonth]) appData.months[activeMonth] = [];
+            renderTabs();
+            renderSummary();
+            renderCategories();
+            renderChart();
+            renderHistory();
+            saveData();
+        }
+
+        toggleCategoryFields();
+        applyDarkMode();
+        renderApp();
+    </script>
+</body>
+</html>
