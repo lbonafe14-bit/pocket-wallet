@@ -325,34 +325,19 @@
         .checkbox-row {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-main);
-            padding: 10px 4px;
-            cursor: pointer;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        .custom-check-box {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            border: 2px solid var(--border);
-            background: var(--input-bg);
-            display: grid;
-            place-items: center;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-
-        .checkbox-row.checked .custom-check-box {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
+            gap: 10px;
             font-size: 0.8rem;
-            font-weight: 900;
+            color: var(--text-muted);
+            padding: 2px 0;
+            cursor: pointer;
+        }
+
+        .checkbox-row input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            border-radius: 4px;
+            cursor: pointer;
         }
 
         .btn-submit {
@@ -717,10 +702,9 @@
                         </select>
                     </div>
 
-                    <div id="boxDivide" class="checkbox-row checked" onclick="toggleCustomCheck('checkDivide')">
-                        <div class="custom-check-box" id="boxDivideIcon">✓</div>
-                        <input type="checkbox" id="checkDivide" checked style="display:none;">
-                        <span>Dividir por 2</span>
+                    <div id="boxDivide" class="checkbox-row">
+                        <input type="checkbox" id="checkDivide" checked>
+                        <label for="checkDivide">Dividir por 2</label>
                     </div>
 
                     <div id="boxParcelado" style="display: none;">
@@ -772,10 +756,9 @@
                     <input type="number" step="0.01" min="0.01" id="editVal" placeholder="Valor (R$)">
                     <div class="field-error" id="editErrVal">Informe um valor maior que zero.</div>
                 </div>
-                <div id="editBoxDivide" class="checkbox-row" onclick="toggleCustomCheck('editCheckDivide')">
-                    <div class="custom-check-box" id="editBoxDivideIcon">✓</div>
-                    <input type="checkbox" id="editCheckDivide" style="display:none;">
-                    <span>Dividir por 2</span>
+                <div id="editBoxDivide" class="checkbox-row">
+                    <input type="checkbox" id="editCheckDivide">
+                    <label for="editCheckDivide">Dividir por 2</label>
                 </div>
                 <div id="editBoxParcelado" style="display:none;">
                     <input type="text" id="editParcelaInput" placeholder="Ex: 8/10 (Atual / Total)">
@@ -870,34 +853,6 @@
             document.querySelectorAll(`[id^="${prefix}Err"]`).forEach(el => el.classList.remove('show'));
         }
 
-        function toggleCustomCheck(id) {
-            const cb = document.getElementById(id);
-            const row = cb.parentElement;
-            const icon = row.querySelector('.custom-check-box');
-            cb.checked = !cb.checked;
-            if (cb.checked) {
-                row.classList.add('checked');
-                icon.innerText = '✓';
-            } else {
-                row.classList.remove('checked');
-                icon.innerText = '';
-            }
-        }
-
-        function setCustomCheckState(id, isChecked) {
-            const cb = document.getElementById(id);
-            const row = cb.parentElement;
-            const icon = row.querySelector('.custom-check-box');
-            cb.checked = isChecked;
-            if (isChecked) {
-                row.classList.add('checked');
-                icon.innerText = '✓';
-            } else {
-                row.classList.remove('checked');
-                icon.innerText = '';
-            }
-        }
-
         function applyDarkMode() {
             document.body.classList.toggle('dark', !!appData.darkMode);
             document.getElementById('darkModeBtn').innerText = appData.darkMode ? '☀️' : '🌙';
@@ -984,7 +939,7 @@
             if (cat === 'Fixas de casa' || cat === 'Pontuais') {
                 boxDivide.style.display = 'flex';
                 if (cat === 'Fixas de casa') {
-                    setCustomCheckState('checkDivide', true);
+                    document.getElementById('checkDivide').checked = true;
                 }
             } else {
                 boxDivide.style.display = 'none';
@@ -1050,7 +1005,7 @@
 
             saveData();
             document.getElementById('expenseForm').reset();
-            setCustomCheckState('checkDivide', true);
+            document.getElementById('checkDivide').checked = true;
             toggleCategoryFields();
             renderApp();
         }
@@ -1139,10 +1094,7 @@
             document.getElementById('editName').value = item.name;
             document.getElementById('editCat').value = item.cat;
             document.getElementById('editVal').value = item.originalVal !== undefined ? item.originalVal : item.val;
-            
-            const isDivided = item.originalVal !== undefined;
-            setCustomCheckState('editCheckDivide', isDivided);
-
+            document.getElementById('editCheckDivide').checked = item.originalVal !== undefined;
             document.getElementById('editParcelaInput').value = item.cat === 'Parcelados' ? `${item.parcelaAtual}/${item.parcelaTotal}` : '';
 
             toggleEditCategoryFields();
@@ -1352,7 +1304,7 @@
                                 <div class="checkbox-custom" role="checkbox" aria-checked="${item.paid}" tabindex="0"
                                      onclick="togglePaid('${item.id}')" onkeydown="checkboxKeydown(event, '${item.id}')">
                                     ${item.paid ? '✓' : ''}
-                                }</div>
+                                </div>
                                 <div class="item-info">
                                     <span class="item-title" onclick="openEditModal('${item.id}')" title="Editar item">${item.name}</span>
                                     <div class="item-meta">${metaHtml}</div>
