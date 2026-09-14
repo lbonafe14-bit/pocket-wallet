@@ -326,17 +326,19 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            padding: 2px 0;
+            padding: 8px 4px;
             cursor: pointer;
             position: relative;
             z-index: 10;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .checkbox-row input {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             accent-color: var(--accent);
             border-radius: 4px;
             cursor: pointer;
@@ -730,9 +732,9 @@
                         </select>
                     </div>
 
-                    <div id="boxDivide" class="checkbox-row">
-                        <input type="checkbox" id="checkDivide" checked>
-                        <label for="checkDivide">Dividir por 2</label>
+                    <div id="boxDivide" class="checkbox-row" onclick="const cb = document.getElementById('checkDivide'); cb.checked = !cb.checked;">
+                        <input type="checkbox" id="checkDivide" checked onclick="event.stopPropagation()">
+                        <label for="checkDivide" style="pointer-events: none;">Dividir por 2</label>
                     </div>
 
                     <div id="boxParcelado" style="display: none;">
@@ -792,9 +794,9 @@
                     <input type="number" step="0.01" min="0.01" id="editVal" placeholder="Valor (R$)">
                     <div class="field-error" id="editErrVal">Informe um valor maior que zero.</div>
                 </div>
-                <div id="editBoxDivide" class="checkbox-row">
-                    <input type="checkbox" id="editCheckDivide">
-                    <label for="editCheckDivide">Dividir por 2</label>
+                <div id="editBoxDivide" class="checkbox-row" onclick="const cb = document.getElementById('editCheckDivide'); cb.checked = !cb.checked;">
+                    <input type="checkbox" id="editCheckDivide" onclick="event.stopPropagation()">
+                    <label for="editCheckDivide" style="pointer-events: none;">Dividir por 2</label>
                 </div>
                 <div id="editBoxParcelado" style="display:none;">
                     <input type="text" id="editParcelaInput" placeholder="Ex: 8/10 (Atual / Total)">
