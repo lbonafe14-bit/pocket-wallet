@@ -6,6 +6,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Pocket">
+    
+    <!-- Ícone de Atalho e Favicon -->
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
+
     <title>Pocket • Smart Wallet</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -93,10 +98,15 @@
             border-radius: var(--radius-sm);
             display: grid;
             place-items: center;
-            background: var(--accent-gradient);
-            color: #fff;
-            box-shadow: 0 8px 20px var(--accent-glow);
-            font-size: 20px;
+            background: none;
+            overflow: hidden;
+        }
+
+        .brand-mark img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
         }
 
         .brand h1 {
@@ -783,7 +793,9 @@
     <div id="pdfContent">
         <header>
             <div class="brand">
-                <div class="brand-mark">✦</div>
+                <div class="brand-mark">
+                    <img src="icon.png" alt="Pocket Icon">
+                </div>
                 <div>
                     <h1>Pocket</h1>
                     <small>Smart Wallet</small>
@@ -936,8 +948,6 @@
             return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
         }
 
-        // Parses a Brazilian-style number input ("1.234,56" or "1234.56" or "1234,56")
-        // into a JS float. Returns NaN if it can't make sense of it.
         function parseAmount(raw) {
             if (typeof raw === 'number') return raw;
             if (!raw) return NaN;
@@ -946,7 +956,6 @@
             const hasComma = s.includes(',');
             const hasDot = s.includes('.');
             if (hasComma && hasDot) {
-                // Assume dot is a thousands separator, comma is the decimal mark
                 s = s.replace(/\./g, '').replace(',', '.');
             } else if (hasComma) {
                 s = s.replace(',', '.');
